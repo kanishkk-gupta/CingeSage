@@ -1,5 +1,12 @@
 # CineSage Analytics
 
+## Live Demos
+
+[![Prompt Template Demo](https://img.shields.io/badge/Prompt%20Template-Live-success?style=for-the-badge)](https://core-prompt.streamlit.app/)
+
+[![Structured Output Demo](https://img.shields.io/badge/Structured%20Output-Live-blue?style=for-the-badge)](https://structured-prompt.streamlit.app/)
+
+---
 ### Right now your app prints nice text. And you will be doing it using Prompt templates.
 
 ---
