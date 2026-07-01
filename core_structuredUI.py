@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
@@ -14,11 +15,36 @@ st.set_page_config(
     layout="centered"
 )
 
-# ---------------- Load Model ---------------- #
+# ---------------- Load Environment ---------------- #
 
 load_dotenv()
 
-model = ChatMistralAI(model="mistral-small-2506")
+# ---------------- Sidebar ---------------- #
+
+st.sidebar.title("🔑 Configuration")
+
+api_key = st.sidebar.text_input(
+    "Enter your Mistral API Key",
+    type="password",
+    placeholder="Paste your API key here..."
+)
+
+st.sidebar.markdown(
+    "[Get your Mistral API Key](https://console.mistral.ai/api-keys)"
+)
+
+api_key = api_key or os.getenv("MISTRAL_API_KEY")
+
+if not api_key:
+    st.warning("👈 Please enter your Mistral API Key from the sidebar.")
+    st.stop()
+
+# ---------------- Model ---------------- #
+
+model = ChatMistralAI(
+    model="mistral-small-2506",
+    api_key=api_key
+)
 
 # ---------------- Schema ---------------- #
 
@@ -65,6 +91,8 @@ paragraph = st.text_area(
     height=220,
     placeholder="Paste a movie description here..."
 )
+
+# ---------------- Button ---------------- #
 
 if st.button("Extract Information"):
 
