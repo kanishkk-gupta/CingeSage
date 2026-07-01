@@ -1,9 +1,11 @@
+import os
 import streamlit as st
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_mistralai import ChatMistralAI
 
 # -------------------- CONFIG --------------------
+
 st.set_page_config(
     page_title="Information Extractor",
     page_icon="📄",
@@ -12,7 +14,32 @@ st.set_page_config(
 
 load_dotenv()
 
-model = ChatMistralAI(model="mistral-small-2506")
+# -------------------- API KEY --------------------
+
+st.sidebar.title("🔑 Configuration")
+
+api_key = st.sidebar.text_input(
+    "Enter your Mistral API Key",
+    type="password",
+    placeholder="Paste your API Key here..."
+)
+
+st.sidebar.markdown(
+    "[Get your Mistral API Key](https://console.mistral.ai/api-keys)"
+)
+
+api_key = api_key or os.getenv("MISTRAL_API_KEY")
+
+if not api_key:
+    st.warning("👈 Please enter your Mistral API Key from the sidebar.")
+    st.stop()
+
+model = ChatMistralAI(
+    model="mistral-small-2506",
+    api_key=api_key
+)
+
+# -------------------- PROMPT --------------------
 
 prompt = ChatPromptTemplate.from_messages([
     (
@@ -66,6 +93,7 @@ Paragraph:
 ])
 
 # -------------------- CSS --------------------
+
 st.markdown("""
 <style>
 
@@ -114,7 +142,11 @@ st.markdown("""
 
 # -------------------- HEADER --------------------
 
-st.markdown('<p class="title">📄 Information Extractor</p>', unsafe_allow_html=True)
+st.markdown(
+    '<p class="title">📄 Information Extractor</p>',
+    unsafe_allow_html=True
+)
+
 st.markdown(
     '<p class="subtitle">Extract structured insights, important entities, and a concise summary from any paragraph.</p>',
     unsafe_allow_html=True
@@ -139,15 +171,23 @@ if st.button("✨ Extract Information"):
     with st.spinner("Analyzing..."):
 
         final_prompt = prompt.invoke(
-            {"paragraph": paragraph}
+            {
+                "paragraph": paragraph
+            }
         )
 
         response = model.invoke(final_prompt)
 
-    st.markdown('<div class="output-card">', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="output-card">',
+        unsafe_allow_html=True
+    )
 
     st.markdown("## 📑 Extracted Information")
 
     st.markdown(response.content)
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown(
+        "</div>",
+        unsafe_allow_html=True
+    )
